@@ -33,7 +33,7 @@ PRIORITÉS
 - gain : entier de 1 (faible) à 5 (très fort) estimant le gain énergétique et de confort attendu du poste.
 
 SORTIE
-- Rends le résultat uniquement via l'outil rendre_diagnostic, en français, ton clair et accessible à un acheteur non spécialiste.
+- Appelle obligatoirement l'outil rendre_diagnostic ; rends le résultat uniquement via cet outil, en français, ton clair et accessible à un acheteur non spécialiste.
 - Renseigne les 8 postes, dans l'ordre : ${POSTES.join(', ')}.
 - Les questions au vendeur / à l'agence doivent être concrètes (factures de chauffage, âge de la chaudière, date de réfection de toiture, diagnostics existants, sinistres d'humidité…).`;
 
@@ -159,7 +159,6 @@ async function callClaude(body, env) {
       max_tokens: 8000,
       system: SYSTEM_PROMPT,
       tools: [TOOL],
-      tool_choice: { type: 'tool', name: TOOL.name },
       messages: buildMessages(body),
     }),
   });
@@ -167,7 +166,7 @@ async function callClaude(body, env) {
   if (!res.ok) throw new Error(data?.error?.message || `Erreur API Anthropic (${res.status})`);
   if (data.stop_reason === 'max_tokens') throw new Error('Réponse tronquée : réessayez avec moins de photos.');
   const block = (data.content || []).find(b => b.type === 'tool_use' && b.name === TOOL.name);
-  if (!block) throw new Error('Réponse inattendue du modèle.');
+  if (!block) throw new Error('Le modèle n’a pas rendu le diagnostic structuré. Réessayez.');
   return block.input;
 }
 
