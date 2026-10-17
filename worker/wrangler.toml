@@ -1,0 +1,14 @@
+name = "energie-proxy"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Origine(s) autorisée(s) à appeler le proxy, séparées par des virgules.
+# Remplacez par l'adresse réelle de votre site Cloudflare Pages.
+ALLOWED_ORIGIN = "https://visite-energie.pages.dev"
+# Modèle Claude utilisé pour le diagnostic.
+MODEL = "claude-sonnet-5-5"
+
+# Secrets (à créer avec `wrangler secret put`, jamais dans ce fichier) :
+#   ANTHROPIC_API_KEY  -> votre clé API Anthropic
+#   APP_TOKEN          -> mot de passe partagé avec l'appli (réglages)

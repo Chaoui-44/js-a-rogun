@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visite Énergie</title>
+<meta name="description" content="Carnet de visite et avis énergétique indicatif pour acheteurs de maisons">
+<meta name="theme-color" content="#0F4C5C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Visite Énergie">
+<style>
+/* ===== Design system : rénovation / énergie / confiance =====
+   Clair et très contrasté (lisible en plein soleil), teal profond = confiance,
+   ambre = énergie / action principale. Polices système (fonctionne hors ligne). */
+:root{
+  --bg:#F4F7F6; --surface:#FFFFFF; --ink:#0F172A; --ink-2:#334155; --muted:#475569;
+  --line:#CBD5E1; --line-strong:#64748B;
+  --brand:#0F4C5C; --brand-hover:#0A3945; --brand-ink:#FFFFFF; --brand-tint:#E3F1F3;
+  --accent:#F5B301; --accent-hover:#E0A200; --accent-ink:#1A1300;
+  --ok:#14532D; --ok-bg:#DCFCE7; --warn:#7C2D12; --warn-bg:#FFEDD5;
+  --bad:#991B1B; --bad-bg:#FEE2E2; --info:#1E3A8A; --info-bg:#DBEAFE;
+  --rec:#B91C1C; --rec-ink:#FFFFFF;
+  --focus:#0B5FFF; --r:14px; --tap:52px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--font);-webkit-tap-highlight-color:transparent}
+h1,h2,h3{line-height:1.25;margin:0}
+h2{font-size:1.25rem} h3{font-size:1.05rem}
+p{margin:0 0 .6em}
+a{color:var(--brand)}
+button,select,input,textarea{font:inherit;color:inherit}
+.ic{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+
+/* ---- Barre haute ---- */
+.top{position:sticky;top:0;z-index:20;background:var(--brand);color:var(--brand-ink);padding-top:env(safe-area-inset-top)}
+.top-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:8px;min-height:64px;padding:6px 12px}
+.top h1{flex:1;font-size:1.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-mark{width:40px;height:40px;flex:none;border-radius:10px;overflow:hidden;background:#fff}
+.brand-mark img,.brand-mark svg{width:100%;height:100%;object-fit:contain;display:block}
+.ibtn{width:var(--tap);height:var(--tap);display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:transparent;border:0;color:inherit;text-decoration:none;cursor:pointer;transition:background .15s}
+.ibtn:hover{background:rgba(255,255,255,.18)}
+.savest{font-size:.8rem;opacity:.95;white-space:nowrap}
+.offpill{background:var(--accent);color:var(--accent-ink);font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+main{max-width:760px;margin:0 auto;padding:14px 16px calc(28px + env(safe-area-inset-bottom))}
+
+/* ---- Boutons & champs ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:var(--tap);padding:10px 20px;border-radius:var(--r);border:2px solid var(--brand);background:var(--brand);color:var(--brand-ink);font-weight:700;cursor:pointer;text-decoration:none;transition:background .15s,transform .05s}
+.btn:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+.btn:active{transform:scale(.98)}
+.btn.alt{background:var(--surface);color:var(--brand)} .btn.alt:hover{background:var(--brand-tint)}
+.btn.cta{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)} .btn.cta:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn.danger{background:var(--surface);border-color:var(--bad);color:var(--bad)} .btn.danger:hover{background:var(--bad-bg)}
+.btn.block{display:flex;width:100%}
+.btn.sm{min-height:44px;padding:6px 14px;font-size:.95rem}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+label.f{display:block;font-weight:600;margin:0 0 14px;color:var(--ink-2)}
+label.f>span{display:block;margin-bottom:4px;font-size:.93rem}
+.inp{width:100%;min-height:var(--tap);padding:10px 12px;border:2px solid var(--line-strong);border-radius:12px;background:var(--surface);color:var(--ink);font-weight:400}
+.inp:hover{border-color:var(--ink-2)}
+select.inp{cursor:pointer}
+textarea.inp{min-height:130px;resize:vertical;line-height:1.5}
+.inp.num{text-align:right}
+input[type=checkbox]{width:26px;height:26px;accent-color:var(--brand);cursor:pointer;flex:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:0 0 14px}
+.hint{color:var(--muted);font-size:.93rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.sp{justify-content:space-between}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pill{display:inline-flex;align-items:center;font-size:.82rem;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--brand-tint);color:var(--brand);white-space:nowrap}
+.pill.urgent{background:var(--bad-bg);color:var(--bad)} .pill.important{background:var(--warn-bg);color:var(--warn)}
+.pill.confort{background:var(--ok-bg);color:var(--ok)} .pill.non_evalue{background:#E2E8F0;color:var(--ink-2)}
+.pill.info{background:var(--info-bg);color:var(--info)}
+
+/* ---- Accueil ---- */
+.sumbar{display:flex;gap:12px;margin-bottom:14px}
+.sumbar>div{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.sumbar b{display:block;font-size:1.4rem}
+.list{display:grid;gap:12px;grid-template-columns:1fr;padding-bottom:96px}
+.visit{display:block;text-decoration:none;color:inherit;margin:0;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.visit:hover{border-color:var(--brand);box-shadow:0 2px 10px rgba(15,76,92,.15)}
+.visit strong{display:block;font-size:1.1rem;margin-bottom:2px}
+.empty{text-align:center;padding:36px 16px}
+.fab{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 35%);z-index:10}
+.fab .btn{max-width:520px;margin:0 auto;min-height:60px;font-size:1.1rem;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+
+/* ---- Onglets ---- */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#E2E8F0;padding:5px;border-radius:var(--r);margin-bottom:14px}
+.tab{min-height:48px;border:0;border-radius:10px;background:transparent;font-weight:700;color:var(--ink-2);cursor:pointer;transition:background .15s}
+.tab:hover{background:rgba(255,255,255,.7)}
+.tab[aria-selected=true]{background:var(--surface);color:var(--brand);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+
+/* ---- Visite : pièces ---- */
+.rooms{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin:0 -16px 6px;padding-inline:16px;scrollbar-width:thin}
+.chip{position:relative;flex:none;min-height:48px;padding:6px 16px;border-radius:99px;border:2px solid var(--line-strong);background:var(--surface);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background .15s}
+.chip:hover{background:var(--brand-tint)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chip .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);border:1px solid var(--accent-ink)}
+.room-main{min-width:0}
+.micstate{min-height:1.6em;font-weight:600;color:var(--ink-2)}
+.micstate.live{color:var(--rec)}
+.interim{color:var(--muted);font-style:italic;min-height:1.4em;margin:4px 0 12px}
+.phgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.ph{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ph img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#E2E8F0}
+.phbar{display:flex;gap:4px;align-items:center;padding:6px}
+.phbar .inp{min-height:44px;padding:6px 8px;font-size:.93rem}
+.dock{position:sticky;bottom:0;z-index:15;margin:18px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--surface);border-top:2px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.12);display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.dock .btn{min-height:68px;flex-direction:column;gap:2px;font-size:.9rem;padding:6px 8px}
+.mic{width:92px;height:92px;border-radius:50%;border:4px solid var(--accent-ink);background:var(--accent);color:var(--accent-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;cursor:pointer;position:relative;transition:background .15s,transform .05s}
+.mic .ic{width:38px;height:38px}
+.mic:hover{background:var(--accent-hover)} .mic:active{transform:scale(.96)}
+.mic[aria-pressed=true]{background:var(--rec);color:var(--rec-ink);border-color:#450A0A}
+.mic[aria-pressed=true]::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:3px solid var(--rec);animation:pulse 1.4s ease-out infinite}
+@keyframes pulse{from{transform:scale(.9);opacity:.9}to{transform:scale(1.15);opacity:0}}
+
+/* ---- Diagnostic ---- */
+.disc{background:var(--warn-bg);color:var(--warn);border:2px solid #FDBA74;border-radius:var(--r);padding:12px 14px;font-weight:600;margin-bottom:14px}
+.err{background:var(--bad-bg);color:var(--bad);border:2px solid #FCA5A5;border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-weight:600}
+.busy{display:flex;align-items:center;gap:12px;font-weight:600}
+.spin{width:28px;height:28px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--brand);animation:rot 1s linear infinite;flex:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+details.poste{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px}
+details.poste>summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;min-height:var(--tap);border-radius:var(--r);transition:background .15s}
+details.poste>summary::-webkit-details-marker{display:none}
+details.poste>summary:hover{background:var(--brand-tint)}
+details.poste>summary b{flex:1 1 150px}
+.pbody{padding:2px 16px 16px;border-top:1px solid var(--line)}
+.pbody label.f{margin-top:12px}
+.chk{display:flex;gap:12px;align-items:center;font-weight:600;min-height:var(--tap);cursor:pointer}
+.big{font-size:1.5rem;font-weight:800;color:var(--brand)}
+table.t{width:100%;border-collapse:collapse;font-size:.95rem}
+table.t th,table.t td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t th{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.03em}
+table.t td.r,table.t th.r{text-align:right;white-space:nowrap}
+.tscroll{overflow-x:auto}
+
+/* ---- Suivi ---- */
+.line{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--bg)}
+.line .row{margin-top:8px}
+
+/* ---- Toast ---- */
+#toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;z-index:60;max-width:90vw;display:none;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+#toast.on{display:block}
+
+/* ---- Rapport imprimable ---- */
+#print-root{display:none}
+.rp{font:11pt/1.45 var(--font);color:#111}
+.rp h1{font-size:20pt;margin:0 0 2pt;color:var(--brand)} .rp h2{font-size:13pt;margin:14pt 0 5pt;color:var(--brand);border-bottom:2px solid var(--brand);padding-bottom:2pt;break-after:avoid}
+.rp .hd{display:flex;gap:12pt;align-items:center;border-bottom:3px solid var(--brand);padding-bottom:8pt;margin-bottom:8pt}
+.rp .hd img,.rp .hd svg{width:64pt;height:64pt;object-fit:contain}
+.rp .hd .who{flex:1} .rp .hd .who b{font-size:13pt}
+.rp .meta{display:grid;grid-template-columns:1fr 1fr;gap:2pt 14pt;margin:6pt 0}
+.rp .disc{font-size:10pt;margin:8pt 0;padding:7pt 10pt}
+.rp table{width:100%;border-collapse:collapse;font-size:9.5pt;margin-top:4pt}
+.rp th,.rp td{border:1px solid #94A3B8;padding:4pt 5pt;vertical-align:top;text-align:left}
+.rp th{background:#E3F1F3} .rp tr{break-inside:avoid}
+.rp td.r,.rp th.r{text-align:right;white-space:nowrap}
+.rp ul{margin:2pt 0 4pt;padding-left:16pt}
+.rp .tot{font-size:14pt;font-weight:800;color:var(--brand)}
+.rp .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6pt}
+.rp .photos figure{margin:0;break-inside:avoid;font-size:8.5pt}
+.rp .photos img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.rp .foot{display:none}
+@media print{
+  @page{size:A4;margin:14mm 14mm 18mm}
+  html,body{background:#fff!important}
+  body>*:not(#print-root){display:none!important}
+  #print-root{display:block}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rp .foot{display:block;position:fixed;bottom:-12mm;left:0;right:0;text-align:center;font-size:8pt;color:#334155;border-top:1px solid #94A3B8;padding-top:3pt}
+}
+
+/* ---- Responsive ---- */
+@media (min-width:768px){
+  main{max-width:900px;padding-top:20px}
+  .list{grid-template-columns:1fr 1fr}
+  .rooms{margin-inline:0;padding-inline:0}
+  .dock{margin-inline:0;border-radius:var(--r) var(--r) 0 0}
+}
+@media (min-width:1024px){
+  main{max-width:1100px}
+  .list{grid-template-columns:1fr 1fr 1fr}
+  .room-layout{display:grid;grid-template-columns:230px 1fr;gap:28px;align-items:start}
+  .rooms{flex-direction:column;overflow:visible;position:sticky;top:84px}
+  .chip{justify-content:space-between;border-radius:12px}
+  .dock{max-width:560px;margin-inline:auto;border-radius:var(--r) var(--r) 0 0}
+}
+@media (max-width:420px){ .two{grid-template-columns:1fr} .sumbar b{font-size:1.2rem} }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="print-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input id="cam" type="file" accept="image/*" capture="environment" hidden>
+<input id="gal" type="file" accept="image/*" multiple hidden>
+<input id="logofile" type="file" accept="image/*" hidden>
+<input id="importfile" type="file" accept="application/json,.json" hidden>
+
+<script>
+'use strict';
+/* =========================================================
+   Données de référence
+   ========================================================= */
+const ROOMS = [
+  {k:'infos',l:'Général'},{k:'salon',l:'Salon'},{k:'cuisine',l:'Cuisine'},{k:'chambres',l:'Chambres'},
+  {k:'combles',l:'Combles'},{k:'toiture',l:'Toiture'},{k:'murs',l:'Murs'},{k:'sols',l:'Sols'},
+  {k:'chauffage',l:'Chauffage'},{k:'ventilation',l:'Ventilation'},{k:'exterieur',l:'Extérieur'}
+];
+const POSTES = [
+  {cle:'fenetres',label:'Fenêtres et menuiseries'},{cle:'combles',label:'Isolation toiture / combles'},
+  {cle:'murs',label:'Murs'},{cle:'sols',label:'Sols'},{cle:'chauffage',label:'Chauffage / pompe à chaleur'},
+  {cle:'ventilation',label:'Ventilation / VMC'},{cle:'eclairage',label:'Éclairage LED'},
+  {cle:'humidite',label:'Humidité / état du bâti visible'}
+];
+const STATUTS = {en_visite:'En visite',diag_pret:'Diagnostic prêt',envoye:'Envoyé à l’acheteur',travaux:'Travaux en cours',clos:'Clos'};
+const PRIO = {urgent:'Urgent',important:'Important',confort:'Confort',non_evalue:'Non évalué'};
+const PAY = {a_facturer:'À facturer',facturee:'Facturée',payee:'Payée'};
+const DISCLAIMER = 'Avis indicatif non réglementaire : ce document n’est ni un DPE ni un audit énergétique. Les constats et fourchettes de prix sont indicatifs et à confirmer par un professionnel RGE.';
+
+/* Grille de prix par défaut — France, TTC, pose comprise, ordres de grandeur indicatifs */
+const DEFAULT_GRID = [
+  {id:'fenetre',label:'Fenêtre double vitrage (pose comprise)',unite:'fenêtre',min:600,max:1300},
+  {id:'baie',label:'Porte-fenêtre / baie vitrée',unite:'unité',min:1000,max:2500},
+  {id:'porte',label:'Porte d’entrée isolante',unite:'unité',min:1500,max:3500},
+  {id:'combles_perdus',label:'Isolation combles perdus (soufflage / rouleaux)',unite:'m²',min:20,max:50},
+  {id:'rampants',label:'Isolation rampants / combles aménagés',unite:'m²',min:45,max:100},
+  {id:'toiture',label:'Isolation toiture par l’extérieur (sarking)',unite:'m²',min:150,max:280},
+  {id:'toiture_rep',label:'Réparation / réfection de toiture',unite:'m²',min:90,max:250},
+  {id:'murs_iti',label:'Isolation des murs par l’intérieur',unite:'m²',min:45,max:110},
+  {id:'murs_ite',label:'Isolation des murs par l’extérieur',unite:'m²',min:120,max:220},
+  {id:'plancher_bas',label:'Isolation plancher bas (sous-sol, vide sanitaire)',unite:'m²',min:25,max:70},
+  {id:'pac_eau',label:'Pompe à chaleur air/eau (pose comprise)',unite:'unité',min:11000,max:18000},
+  {id:'pac_air',label:'Pompe à chaleur air/air (multisplit)',unite:'unité',min:3500,max:9000},
+  {id:'chaudiere',label:'Chaudière gaz à condensation',unite:'unité',min:3500,max:7500},
+  {id:'cet',label:'Chauffe-eau thermodynamique',unite:'unité',min:2500,max:4500},
+  {id:'vmc_simple',label:'VMC simple flux hygroréglable',unite:'logement',min:1200,max:3000},
+  {id:'vmc_double',label:'VMC double flux',unite:'logement',min:4500,max:9500},
+  {id:'led',label:'Éclairage LED (ampoules / spots)',unite:'point',min:8,max:40},
+  {id:'humidite',label:'Traitement humidité (remontées, drainage)',unite:'ml',min:80,max:250},
+  {id:'audit',label:'Audit énergétique par un professionnel certifié',unite:'forfait',min:800,max:1500}
+];
+const DEFAULT_SETTINGS = {
+  profile:{name:'Jordan',tagline:'Coordinateur énergie — accompagnement d’acheteurs',phone:'',email:'',siret:''},
+  logo:null, workerUrl:'', token:'', visitFee:250, commissionRate:8,
+  grid:DEFAULT_GRID
+};
+
+/* =========================================================
+   Utilitaires
+   ========================================================= */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = ()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const eur = n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
+const eur2 = n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n||0);
+const today = ()=>new Date().toISOString().slice(0,10);
+const fdate = d=>d?new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'';
+const num = v=>{const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0};
+const roomLabel = k=>(ROOMS.find(r=>r.k===k)||{l:k}).l;
+
+const ICONS = {
+  mic:'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>',
+  camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
+  plus:'<path d="M5 12h14M12 5v14"/>',
+  left:'<path d="m15 18-6-6 6-6"/>', right:'<path d="m9 18 6-6-6-6"/>',
+  sliders:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  doc:'<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6M8 13h8M8 17h8"/>',
+  down:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>',
+  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+};
+const ic = (n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]||''}</svg>`;
+const LOGO_SVG = `<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#0F4C5C"/><path d="M96 262 256 128l160 134v138H96z" fill="none" stroke="#fff" stroke-width="28" stroke-linejoin="round"/><path d="M276 196 212 296h50l-20 80 78-112h-52z" fill="#F5B301"/></svg>`;
+
+function getPath(o,p){return p.split('.').reduce((a,k)=>a==null?a:a[k],o)}
+function setPath(o,p,v){const ks=p.split('.');let a=o;ks.slice(0,-1).forEach((k,i)=>{if(a[k]==null)a[k]=/^\d+$/.test(ks[i+1])?[]:{};a=a[k]});a[ks[ks.length-1]]=v}
+
+let toastT;
+function toast(m,ms=3200){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms)}
+
+/* =========================================================
+   IndexedDB
+   ========================================================= */
+const DB = (()=>{
+  let db;
+  const rq = r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+  const st = (n,m='readonly')=>db.transaction(n,m).objectStore(n);
+  return {
+    open:()=>new Promise((res,rej)=>{
+      const r=indexedDB.open('visite-energie',1);
+      r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('visits',{keyPath:'id'});
+        d.createObjectStore('photos',{keyPath:'id'}).createIndex('visit','visitId');d.createObjectStore('kv')};
+      r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>rej(r.error);
+    }),
+    get:(n,k)=>rq(st(n).get(k)), all:n=>rq(st(n).getAll()),
+    put:(n,v,k)=>rq(st(n,'readwrite').put(v,k)), del:(n,k)=>rq(st(n,'readwrite').delete(k)),
+    photosOf:id=>rq(st('photos').index('visit').getAll(id))
+  };
+})();
+
+/* =========================================================
+   État
+   ========================================================= */
+const S = {settings:null,visits:[],v:null,photos:[],room:'infos',tab:'visite',busy:false,err:'',urls:new Map(),withPhotos:true};
+const app = $('#app');
+
+function mergeSettings(st){
+  const d=JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  if(!st) return d;
+  return {...d,...st,profile:{...d.profile,...(st.profile||{})},grid:Array.isArray(st.grid)&&st.grid.length?st.grid:d.grid};
+}
+function newVisit(){
+  return {id:uid(),address:'',buyer:'',date:today(),status:'en_visite',surface:'',year:'',dpe:'',
+    notes:{},diag:null,commissionRate:S.settings.commissionRate,createdAt:Date.now(),updatedAt:Date.now(),
+    suivi:{visitFee:S.settings.visitFee,visitPay:'a_facturer',artisans:[],works:[]}};
+}
+function photoURL(p){
+  if(!S.urls.has(p.id)) S.urls.set(p.id,URL.createObjectURL(p.blob));
+  return S.urls.get(p.id);
+}
+
+/* ---- Enregistrement automatique ---- */
+let saveT, settingsT;
+function setSaveState(s){const e=$('#savest');if(e)e.textContent=s==='saving'?'Enregistrement…':s==='saved'?'✓ Enregistré':s==='err'?'⚠ Non enregistré':''}
+function touch(){
+  if(!S.v) return;
+  S.v.updatedAt=Date.now(); setSaveState('saving');
+  clearTimeout(saveT); saveT=setTimeout(flush,350);
+}
+async function flush(){
+  clearTimeout(saveT);
+  if(!S.v) return;
+  try{
+    await DB.put('visits',S.v);
+    if(!S.visits.includes(S.v)) S.visits.push(S.v);
+    setSaveState('saved');
+  }catch(e){ setSaveState('err'); toast('Enregistrement impossible (stockage plein ?)'); }
+}
+function saveSettings(){
+  clearTimeout(settingsT);
+  settingsT=setTimeout(()=>DB.put('kv',S.settings,'settings').catch(()=>toast('Réglages non enregistrés')),350);
+}
+window.addEventListener('pagehide',()=>{flush();DB.put('kv',S.settings,'settings')});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){flush();stopMic()}});
+
+/* =========================================================
+   Routage
+   ========================================================= */
+async function route(){
+  await flush(); stopMic();
+  const [a,b,c]=location.hash.replace(/^#\/?/,'').split('/');
+  if(a==='visit'){
+    const v=S.visits.find(x=>x.id===b);
+    if(!v){location.hash='#/';return}
+    if(!S.v||S.v.id!==v.id){S.v=v;S.photos=await DB.photosOf(v.id);S.room='infos';S.err=''}
+    S.tab=['visite','diag','suivi'].includes(c)?c:'visite';
+    viewVisit();
+  }else if(a==='settings'){S.v=null;viewSettings()}
+  else{S.v=null;viewHome()}
+  window.scrollTo(0,0);
+}
+
+function header({title,back,right=''}){
+  return `<header class="top"><div class="top-in">
+    ${back?`<a class="ibtn" href="${back}" aria-label="Retour">${ic('left')}</a>`:`<span class="brand-mark">${S.settings.logo?`<img src="${esc(S.settings.logo)}" alt="">`:LOGO_SVG}</span>`}
+    <h1 id="htitle">${esc(title)}</h1>
+    ${navigator.onLine?'':'<span class="offpill">Hors connexion</span>'}
+    <span id="savest" class="savest" role="status"></span>${right}
+  </div></header>`;
+}
+const settingsBtn = `<a class="ibtn" href="#/settings" aria-label="Réglages">${ic('sliders')}</a>`;
+
+/* =========================================================
+   Accueil
+   ========================================================= */
+function commissionOf(w,v){return Math.round((num(w.montant)*num(v.commissionRate)))/100}
+function viewHome(){
+  const vs=[...S.visits].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.createdAt-a.createdAt);
+  let due=0; vs.forEach(v=>(v.suivi?.works||[]).forEach(w=>{if(w.pay!=='payee')due+=commissionOf(w,v)}));
+  app.innerHTML=header({title:'Visite Énergie',right:settingsBtn})+`<main>
+    <div class="sumbar"><div><span class="hint">Dossiers</span><b>${vs.length}</b></div><div><span class="hint">Commissions à encaisser</span><b>${eur2(due)}</b></div></div>
+    ${vs.length?`<div class="list">${vs.map(v=>`
+      <a class="card visit" href="#/visit/${v.id}/visite">
+        <strong>${esc(v.address)||'Adresse à renseigner'}</strong>
+        <div>${esc(v.buyer)||'<span class="hint">Acheteur à renseigner</span>'}</div>
+        <div class="row sp" style="margin-top:8px"><span class="hint">${esc(fdate(v.date))}</span><span class="pill ${v.status==='clos'?'':'info'}">${esc(STATUTS[v.status]||'')}</span></div>
+      </a>`).join('')}</div>`
+    :`<div class="card empty"><h2>Aucune visite pour l’instant</h2><p class="hint">Touchez « Nouvelle visite » pour démarrer un dossier. Tout est enregistré sur ce téléphone, même sans réseau.</p></div>`}
+    </main>
+    <div class="fab"><button class="btn cta block" data-a="new">${ic('plus')} Nouvelle visite</button></div>`;
+}
+
+/* =========================================================
+   Visite
+   ========================================================= */
+function viewVisit(){
+  const v=S.v;
+  app.innerHTML=header({title:v.address||'Nouvelle visite',back:'#/'})+`<main>
+    <div class="tabs" role="tablist">
+      ${[['visite','Visite'],['diag','Diagnostic'],['suivi','Suivi']].map(([k,l])=>`<button class="tab" role="tab" aria-selected="${S.tab===k}" data-a="tab" data-arg="${k}">${l}</button>`).join('')}
+    </div><div id="tabbody"></div></main>`;
+  renderTab();
+}
+function renderTab(){
+  const el=$('#tabbody'); if(!el) return;
+  el.innerHTML=S.tab==='visite'?roomView():S.tab==='diag'?diagView():suiviView();
+  $$('textarea.auto',el).forEach(autosize);
+  if(S.tab==='visite') syncMic();
+}
+function autosize(t){t.style.height='auto';t.style.height=Math.max(t.scrollHeight+4,130)+'px'}
+
+function roomHasData(k){return !!((S.v.notes[k]||'').trim()||S.photos.some(p=>p.room===k))}
+
+function roomView(){
+  const v=S.v, k=S.room, label=roomLabel(k);
+  const chips=ROOMS.map(r=>`<button class="chip ${k===r.k?'on':''}" data-a="room" data-arg="${r.k}" aria-pressed="${k===r.k}">${r.l}${roomHasData(r.k)?'<span class="dot" title="Renseigné"></span><span class="sr">(renseigné)</span>':''}</button>`).join('');
+  const photos=S.photos.filter(p=>p.room===k).sort((a,b)=>a.ts-b.ts);
+  const infos=k==='infos'?`
+    <div class="card">
+      <label class="f"><span>Adresse du bien</span><input class="inp" data-b="address" value="${esc(v.address)}" autocomplete="street-address" placeholder="12 rue des Lilas, 44000 Nantes"></label>
+      <label class="f"><span>Nom de l’acheteur</span><input class="inp" data-b="buyer" value="${esc(v.buyer)}" autocomplete="name"></label>
+      <div class="two">
+        <label class="f"><span>Date de visite</span><input class="inp" type="date" data-b="date" value="${esc(v.date)}"></label>
+        <label class="f"><span>Statut du dossier</span><select class="inp" data-b="status">${Object.entries(STATUTS).map(([a,b])=>`<option value="${a}" ${v.status===a?'selected':''}>${b}</option>`).join('')}</select></label>
+      </div>
+      <div class="two">
+        <label class="f"><span>Surface habitable (m²)</span><input class="inp num" data-b="surface" inputmode="decimal" value="${esc(v.surface)}"></label>
+        <label class="f"><span>Année de construction</span><input class="inp num" data-b="year" inputmode="numeric" value="${esc(v.year)}"></label>
+      </div>
+      <label class="f"><span>DPE annoncé par le vendeur (non vérifié)</span><select class="inp" data-b="dpe">${['','A','B','C','D','E','F','G'].map(x=>`<option value="${x}" ${v.dpe===x?'selected':''}>${x||'Inconnu / non communiqué'}</option>`).join('')}</select></label>
+    </div>`:'';
+  return `<div class="room-layout"><nav class="rooms" aria-label="Pièces">${chips}</nav>
+    <div class="room-main">
+      <h2>${esc(k==='infos'?'Général — remarques et vue d’ensemble':label)}</h2>
+      ${infos}
+      <div id="micstate" class="micstate" aria-live="polite"></div>
+      <label class="f" style="margin-top:6px"><span class="sr">Notes ${esc(label)}</span>
+        <textarea class="inp auto" id="notes" data-b="notes.${k}" placeholder="Dictez avec le micro ou écrivez ici…">${esc(v.notes[k]||'')}</textarea></label>
+      <div id="interim" class="interim" aria-hidden="true"></div>
+      <div class="row sp"><h3>Photos (${photos.length})</h3><button class="btn alt sm" data-a="gallery">${ic('image')} Galerie</button></div>
+      <div class="phgrid" style="margin-top:10px">${photos.map(p=>`
+        <figure class="ph"><img src="${photoURL(p)}" alt="Photo ${esc(label)}${p.caption?' — '+esc(p.caption):''}" loading="lazy">
+          <div class="phbar"><input class="inp" data-pc="${p.id}" value="${esc(p.caption||'')}" placeholder="Légende" aria-label="Légende de la photo">
+          <button class="ibtn" style="color:var(--bad)" data-a="delphoto" data-arg="${p.id}" aria-label="Supprimer la photo">${ic('trash')}</button></div></figure>`).join('')}</div>
+      ${photos.length?'':'<p class="hint">Aucune photo pour cette pièce.</p>'}
+      <div class="dock">
+        <button class="btn alt" data-a="photo">${ic('camera')} Photo</button>
+        <button class="mic" id="micbtn" data-a="mic" aria-pressed="false" aria-label="Dicter les observations">${ic('mic')}<span>Dicter</span></button>
+        <button class="btn alt" data-a="next">Suivant ${ic('right')}</button>
+      </div>
+    </div></div>`;
+}
+
+/* ---- Dictée vocale (aucune sortie audio) ---- */
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null, listening=false, micFatal=false, micRoom=null;
+function syncMic(){
+  const b=$('#micbtn'); if(!b) return;
+  b.setAttribute('aria-pressed',String(listening));
+  b.innerHTML=(listening?ic('stop'):ic('mic'))+`<span>${listening?'Arrêter':'Dicter'}</span>`;
+  const m=$('#micstate'); if(m){m.classList.toggle('live',listening);m.textContent=listening?'● J’écoute… parlez, puis touchez « Arrêter ».':(SR?'':'Dictée indisponible sur ce navigateur : utilisez le micro du clavier.')}
+}
+function appendNote(text){
+  const k=micRoom||S.room; text=text.trim(); if(!text) return;
+  text=text.charAt(0).toUpperCase()+text.slice(1);
+  const cur=S.v.notes[k]||'';
+  S.v.notes[k]=cur+(cur&&!/\n$/.test(cur)?'\n':'')+text;
+  const t=$('#notes'); if(t&&S.room===k){t.value=S.v.notes[k];autosize(t);t.scrollTop=t.scrollHeight}
+  touch();
+}
+function startMic(){
+  if(!SR){toast('Dictée non disponible ici : utilisez le micro du clavier du téléphone.',4500);return}
+  micFatal=false; micRoom=S.room;
+  rec=new SR(); rec.lang='fr-FR'; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+  rec.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i];
+      if(r.isFinal) appendNote(r[0].transcript); else interim+=r[0].transcript;
+    }
+    const el=$('#interim'); if(el) el.textContent=interim;
+  };
+  rec.onerror=e=>{
+    if(e.error==='no-speech'||e.error==='aborted') return;
+    micFatal=true;
+    toast(e.error==='not-allowed'||e.error==='service-not-allowed'?'Micro refusé : autorisez-le dans les réglages du navigateur.'
+      :e.error==='network'?'La dictée nécessite une connexion. Utilisez le micro du clavier hors ligne.':'Erreur de dictée : '+e.error,5000);
+  };
+  rec.onend=()=>{
+    const el=$('#interim'); if(el) el.textContent='';
+    if(listening&&!micFatal){try{rec.start();return}catch{}}
+    listening=false; syncMic();
+  };
+  try{rec.start();listening=true}catch{listening=false}
+  syncMic();
+}
+function stopMic(){
+  if(!listening&&!rec) return;
+  listening=false;
+  try{rec&&rec.stop()}catch{}
+  rec=null; syncMic();
+}
+
+/* ---- Photos ---- */
+async function shrink(file,max=1280,q=.75){
+  let bmp;
+  try{bmp=await createImageBitmap(file,{imageOrientation:'from-image'})}
+  catch{
+    bmp=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)});
+  }
+  const w=bmp.width||bmp.naturalWidth, h=bmp.height||bmp.naturalHeight, k=Math.min(1,max/Math.max(w,h));
+  const c=document.createElement('canvas'); c.width=Math.round(w*k); c.height=Math.round(h*k);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  return new Promise(r=>c.toBlob(r,'image/jpeg',q));
+}
+async function addPhotos(files){
+  if(!S.v||!files.length) return;
+  let n=0;
+  for(const f of files){
+    try{
+      const blob=await shrink(f);
+      const p={id:uid(),visitId:S.v.id,room:S.room,caption:'',blob,ts:Date.now()+n};
+      await DB.put('photos',p); S.photos.push(p); n++;
+    }catch(e){toast('Photo non enregistrée : '+(e.message||'erreur'))}
+  }
+  if(n){S.v.updatedAt=Date.now();flush();toast(n+' photo'+(n>1?'s':'')+' ajoutée'+(n>1?'s':''));renderTab()}
+}
+
+/* =========================================================
+   Génération du diagnostic
+   ========================================================= */
+function blobToB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(b)})}
+async function buildPayload(){
+  const v=S.v, s=S.settings;
+  const cp=(v.address.match(/\b\d{5}\b/)||[''])[0];
+  let ph=[...S.photos].sort((a,b)=>a.ts-b.ts);
+  if(ph.length>24){const step=ph.length/24;ph=Array.from({length:24},(_,i)=>ph[Math.floor(i*step)])}
+  const photos=[];
+  for(const p of ph) photos.push({piece:roomLabel(p.room),legende:p.caption||'',media_type:'image/jpeg',data:await blobToB64(p.blob)});
+  return {
+    bien:{code_postal:cp,surface:num(v.surface),annee:String(v.year||''),dpe_annonce:v.dpe||''},
+    pieces:ROOMS.map(r=>({cle:r.k,label:r.l,notes:v.notes[r.k]||''})).filter(p=>p.notes.trim()),
+    photos,
+    grille:s.grid.map(g=>({id:g.id,label:g.label,unite:g.unite,min:num(g.min),max:num(g.max)}))
+  };
+}
+function normalizeDiag(d){
+  const grid=Object.fromEntries(S.settings.grid.map(g=>[g.id,g]));
+  const postes=POSTES.map(def=>{
+    const src=(d.postes||[]).find(p=>p.cle===def.cle)||{};
+    let min=0,max=0; const hyp=[];
+    (src.lignes||[]).forEach(l=>{
+      const g=grid[l.grille_id], q=num(l.quantite);
+      if(g){ min+=q*num(g.min); max+=q*num(g.max);
+        hyp.push(`${l.libelle||g.label} : ${q} ${l.unite||g.unite} × ${eur(num(g.min))}–${eur(num(g.max))}/${g.unite}${l.hypothese?' ('+l.hypothese+')':''}`); }
+      else { min+=num(l.prix_min); max+=num(l.prix_max);
+        hyp.push(`${l.libelle||'Poste'} : estimation hors grille ${eur(num(l.prix_min))}–${eur(num(l.prix_max))}${l.hypothese?' ('+l.hypothese+')':''}`); }
+    });
+    const prio=PRIO[src.priorite]?src.priorite:'non_evalue';
+    min=Math.round(min); max=Math.round(max);
+    return {cle:def.cle,label:def.label,constat:src.constat||'Non renseigné pendant la visite — à vérifier.',priorite:prio,
+      travaux:src.travaux||'',gain:Math.min(5,Math.max(1,Math.round(num(src.gain))||1)),min,max,hypotheses:hyp.join('\n'),incluse:prio!=='non_evalue'&&max>0};
+  });
+  return {generatedAt:Date.now(),synthese:d.synthese||'',points_forts:d.points_forts||[],points_faibles:d.points_faibles||[],postes,questions:d.questions||[]};
+}
+async function generate(){
+  const s=S.settings, v=S.v;
+  if(!s.workerUrl||!s.token){toast('Renseignez d’abord l’adresse du proxy et le jeton dans les Réglages.',4500);return}
+  if(!navigator.onLine){toast('Connexion nécessaire pour générer le diagnostic.');return}
+  if(!Object.values(v.notes).some(t=>(t||'').trim())&&!S.photos.length){toast('Ajoutez au moins des notes ou des photos.');return}
+  if(v.diag&&!confirm('Régénérer remplacera le diagnostic actuel, y compris vos modifications. Continuer ?')) return;
+  await flush(); S.busy=true; S.err=''; renderTab();
+  const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),5*60*1000);
+  try{
+    const res=await fetch(s.workerUrl.replace(/\/+$/,'')+'/diagnostic',{method:'POST',signal:ctl.signal,
+      headers:{'Content-Type':'application/json','X-App-Token':s.token},body:JSON.stringify(await buildPayload())});
+    const txt=(await res.text()).trim(); let data;
+    try{data=JSON.parse(txt)}catch{throw new Error('Réponse illisible du proxy (HTTP '+res.status+').')}
+    if(!res.ok||!data.ok) throw new Error(data.error||'Erreur HTTP '+res.status);
+    v.diag=normalizeDiag(data.diagnostic);
+    if(v.status==='en_visite') v.status='diag_pret';
+    touch(); await flush();
+  }catch(e){
+    S.err=e.name==='AbortError'?'Délai dépassé : réessayez.':(e.message==='Failed to fetch'?'Proxy injoignable : vérifiez l’adresse du Worker et votre connexion.':e.message);
+  }finally{clearTimeout(to);S.busy=false;renderTab()}
+}
+
+/* ---- Calculs budget ---- */
+const avg = p=>(num(p.min)+num(p.max))/2;
+function totals(d){
+  const t={min:0,max:0,by:{urgent:[0,0],important:[0,0],confort:[0,0]}};
+  d.postes.filter(p=>p.incluse).forEach(p=>{t.min+=num(p.min);t.max+=num(p.max);const b=t.by[p.priorite];if(b){b[0]+=num(p.min);b[1]+=num(p.max)}});
+  return t;
+}
+function ranking(d){return d.postes.filter(p=>p.incluse&&avg(p)>0).map(p=>({p,score:(num(p.gain)||1)/avg(p)*1000})).sort((a,b)=>b.score-a.score)}
+const range = p=>num(p.max)>0?`${eur(p.min)} – ${eur(p.max)}`:'—';
+
+function sumHTML(d){
+  const t=totals(d), rk=ranking(d);
+  return `<div class="card"><h2>Budget total estimé</h2>
+    <p class="big">${eur(t.min)} – ${eur(t.max)}</p>
+    <p class="hint">Fourchette indicative, hors aides, à confirmer par des devis d’artisans RGE.</p>
+    <div class="tscroll"><table class="t"><tbody>${['urgent','important','confort'].map(k=>`<tr><td><span class="pill ${k}">${PRIO[k]}</span></td><td class="r">${t.by[k][1]?eur(t.by[k][0])+' – '+eur(t.by[k][1]):'—'}</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="card"><h2>Classement gain / coût</h2><p class="hint">Les postes qui apportent le plus de gain pour le moins d’argent, d’abord.</p>
+    ${rk.length?`<div class="tscroll"><table class="t"><thead><tr><th>#</th><th>Poste</th><th>Gain</th><th class="r">Coût indicatif</th></tr></thead><tbody>${rk.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.p.label)}<br><span class="pill ${r.p.priorite}">${PRIO[r.p.priorite]}</span></td><td>${num(r.p.gain)}/5</td><td class="r">${range(r.p)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="hint">Aucun poste chiffré.</p>'}</div>`;
+}
+
+function diagView(){
+  const v=S.v, d=v.diag, np=S.photos.length, nn=Object.values(v.notes).filter(t=>(t||'').trim()).length;
+  const warn=!S.settings.workerUrl||!S.settings.token;
+  const busy=S.busy?`<div class="card busy" role="status"><span class="spin"></span><span>Analyse en cours… cela peut prendre 1 à 2 minutes. Gardez l’écran allumé.</span></div>`:'';
+  const err=S.err?`<div class="err" role="alert">${esc(S.err)}</div>`:'';
+  if(!d) return `${busy}${err}<div class="card">
+      <h2>Générer le diagnostic</h2>
+      <p>Envoie vos <b>${nn} note${nn>1?'s':''}</b> et <b>${np} photo${np>1?'s':''}</b> à Claude via votre proxy sécurisé.</p>
+      ${warn?`<p class="err">Proxy non configuré. <a href="#/settings">Ouvrir les réglages</a></p>`:''}
+      <p class="hint">Avis indicatif uniquement : ce n’est pas un DPE. Nécessite une connexion.</p>
+      <button class="btn cta block" data-a="gen" ${S.busy?'disabled':''}>${ic('zap')} Générer le diagnostic</button></div>`;
+  const list=a=>(a||[]).join('\n');
+  return `${busy}${err}
+    <div class="disc">${esc(DISCLAIMER)}</div>
+    <div class="card"><h2>Synthèse du bien</h2>
+      <label class="f" style="margin-top:10px"><span class="sr">Synthèse</span><textarea class="inp auto" data-b="diag.synthese">${esc(d.synthese)}</textarea></label>
+      <label class="f"><span>Points forts (un par ligne)</span><textarea class="inp auto" data-b="diag.points_forts" data-t="lines">${esc(list(d.points_forts))}</textarea></label>
+      <label class="f"><span>Points faibles énergétiques (un par ligne)</span><textarea class="inp auto" data-b="diag.points_faibles" data-t="lines">${esc(list(d.points_faibles))}</textarea></label></div>
+    <h2 style="margin:18px 0 10px">Postes</h2>
+    ${d.postes.map((p,i)=>`<details class="poste" ${p.priorite==='urgent'?'open':''}>
+      <summary><b>${esc(p.label)}</b><span class="pill ${p.priorite}" data-sumprio="${i}">${PRIO[p.priorite]}</span><span class="hint" data-sumrange="${i}">${range(p)}</span></summary>
+      <div class="pbody">
+        <label class="f"><span>Constat</span><textarea class="inp auto" data-b="diag.postes.${i}.constat">${esc(p.constat)}</textarea></label>
+        <div class="two">
+          <label class="f"><span>Priorité</span><select class="inp" data-b="diag.postes.${i}.priorite">${Object.entries(PRIO).map(([a,b])=>`<option value="${a}" ${p.priorite===a?'selected':''}>${b}</option>`).join('')}</select></label>
+          <label class="f"><span>Gain attendu (1–5)</span><select class="inp" data-b="diag.postes.${i}.gain" data-t="num">${[1,2,3,4,5].map(n=>`<option ${num(p.gain)===n?'selected':''}>${n}</option>`).join('')}</select></label>
+        </div>
+        <label class="f"><span>Travaux conseillés</span><textarea class="inp auto" data-b="diag.postes.${i}.travaux">${esc(p.travaux)}</textarea></label>
+        <div class="two">
+          <label class="f"><span>Prix min (€)</span><input class="inp num" inputmode="numeric" data-b="diag.postes.${i}.min" data-t="num" value="${num(p.min)}"></label>
+          <label class="f"><span>Prix max (€)</span><input class="inp num" inputmode="numeric" data-b="diag.postes.${i}.max" data-t="num" value="${num(p.max)}"></label>
+        </div>
+        <label class="f"><span>Base de calcul (hypothèses)</span><textarea class="inp auto" data-b="diag.postes.${i}.hypotheses">${esc(p.hypotheses)}</textarea></label>
+        <label class="chk"><input type="checkbox" data-b="diag.postes.${i}.incluse" ${p.incluse?'checked':''}> Inclure au budget</label>
+      </div></details>`).join('')}
+    <div id="diag-sum">${sumHTML(d)}</div>
+    <div class="card"><h2>Questions à poser au vendeur / à l’agence</h2>
+      <label class="f" style="margin-top:10px"><span class="sr">Questions</span><textarea class="inp auto" data-b="diag.questions" data-t="lines">${esc(list(d.questions))}</textarea></label></div>
+    <div class="card">
+      <label class="chk"><input type="checkbox" id="withph" ${S.withPhotos?'checked':''}> Joindre les photos au PDF</label>
+      <button class="btn cta block" data-a="print" style="margin-top:8px">${ic('down')} Exporter en PDF</button>
+      <p class="hint" style="margin-top:8px">Dans la fenêtre d’impression, choisissez « Enregistrer au format PDF » (Android) ou partagez l’aperçu (iPhone).</p>
+      <button class="btn alt block" data-a="gen" style="margin-top:12px" ${S.busy?'disabled':''}>${ic('refresh')} Régénérer le diagnostic</button></div>`;
+}
+
+/* ---- Rapport PDF (impression navigateur) ---- */
+function reportHTML(v,withPh){
+  const d=v.diag, p=S.settings.profile, t=totals(d), rk=ranking(d);
+  const logo=S.settings.logo?`<img src="${esc(S.settings.logo)}" alt="Logo">`:LOGO_SVG;
+  const li=a=>(a||[]).filter(x=>x&&x.trim()).map(x=>`<li>${esc(x)}</li>`).join('');
+  const contact=[p.phone,p.email,p.siret&&('SIRET '+p.siret)].filter(Boolean).map(esc).join(' · ');
+  const phs=withPh?[...S.photos].sort((a,b)=>ROOMS.findIndex(r=>r.k===a.room)-ROOMS.findIndex(r=>r.k===b.room)||a.ts-b.ts):[];
+  return `<div class="rp">
+    <div class="hd">${logo}<div class="who"><b>${esc(p.name)}</b><br>${esc(p.tagline)}<br>${contact}</div></div>
+    <h1>Avis énergétique indicatif</h1>
+    <div class="meta"><div><b>Bien :</b> ${esc(v.address)||'—'}</div><div><b>Acheteur :</b> ${esc(v.buyer)||'—'}</div>
+      <div><b>Visite du :</b> ${esc(fdate(v.date))}</div><div><b>Surface / année :</b> ${v.surface?esc(v.surface)+' m²':'—'} / ${esc(v.year)||'—'}</div></div>
+    <div class="disc">${esc(DISCLAIMER)}</div>
+    <h2>Synthèse du bien</h2><p>${esc(d.synthese).replace(/\n/g,'<br>')}</p>
+    <div class="meta" style="align-items:start"><div><b>Points forts</b><ul>${li(d.points_forts)}</ul></div><div><b>Points faibles énergétiques</b><ul>${li(d.points_faibles)}</ul></div></div>
+    <h2>Budget total estimé (indicatif)</h2>
+    <p class="tot">${eur(t.min)} – ${eur(t.max)}</p>
+    <p>Urgent : ${t.by.urgent[1]?eur(t.by.urgent[0])+' – '+eur(t.by.urgent[1]):'—'} · Important : ${t.by.important[1]?eur(t.by.important[0])+' – '+eur(t.by.important[1]):'—'} · Confort : ${t.by.confort[1]?eur(t.by.confort[0])+' – '+eur(t.by.confort[1]):'—'}</p>
+    <h2>Détail par poste</h2>
+    <table><thead><tr><th>Poste</th><th>Constat</th><th>Priorité</th><th>Travaux conseillés</th><th class="r">Fourchette indicative</th></tr></thead><tbody>
+      ${d.postes.map(x=>`<tr><td><b>${esc(x.label)}</b></td><td>${esc(x.constat).replace(/\n/g,'<br>')}</td><td>${PRIO[x.priorite]}</td><td>${esc(x.travaux).replace(/\n/g,'<br>')}</td><td class="r">${range(x)}${x.incluse?'':'<br><small>(hors budget)</small>'}</td></tr>`).join('')}
+    </tbody></table>
+    <h2>Classement gain / coût</h2>
+    ${rk.length?`<table><thead><tr><th>#</th><th>Poste</th><th>Gain attendu</th><th class="r">Coût indicatif</th></tr></thead><tbody>${rk.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.p.label)}</td><td>${num(r.p.gain)}/5</td><td class="r">${range(r.p)}</td></tr>`).join('')}</tbody></table>`:'<p>Aucun poste chiffré.</p>'}
+    <h2>Questions à poser au vendeur ou à l’agence</h2><ul>${li(d.questions)}</ul>
+    ${phs.length?`<h2>Photos de la visite</h2><div class="photos">${phs.map(x=>`<figure><img src="${photoURL(x)}" alt=""><figcaption>${esc(roomLabel(x.room))}${x.caption?' — '+esc(x.caption):''}</figcaption></figure>`).join('')}</div>`:''}
+    <div class="foot">Avis indicatif non réglementaire — ni DPE ni audit énergétique — fourchettes de prix à confirmer par un professionnel RGE · ${esc(p.name)}</div>
+  </div>`;
+}
+async function printReport(){
+  const v=S.v; if(!v.diag) return;
+  const root=$('#print-root'); root.innerHTML=reportHTML(v,S.withPhotos);
+  await Promise.all($$('img',root).map(i=>i.decode?i.decode().catch(()=>{}):0));
+  const old=document.title;
+  document.title='Avis-energetique-'+((v.address||v.buyer||'visite').replace(/[^\p{L}\p{N}]+/gu,'-').slice(0,40));
+  window.onafterprint=()=>{document.title=old;window.onafterprint=null};
+  window.print();
+}
+
+/* =========================================================
+   Suivi commercial
+   ========================================================= */
+function suiviSum(v){
+  const w=v.suivi.works, tot=w.reduce((a,x)=>a+num(x.montant),0), com=w.reduce((a,x)=>a+commissionOf(x,v),0);
+  const paid=w.filter(x=>x.pay==='payee').reduce((a,x)=>a+commissionOf(x,v),0);
+  return `<div class="card"><h2>Synthèse financière</h2><table class="t"><tbody>
+    <tr><td>Travaux réalisés (artisans partenaires)</td><td class="r"><b>${eur2(tot)}</b></td></tr>
+    <tr><td>Commission totale (${num(v.commissionRate)} %)</td><td class="r"><b>${eur2(com)}</b></td></tr>
+    <tr><td>Commission déjà encaissée</td><td class="r">${eur2(paid)}</td></tr>
+    <tr><td>Commission restant à encaisser</td><td class="r"><b>${eur2(com-paid)}</b></td></tr>
+    <tr><td>Visite (${PAY[v.suivi.visitPay]})</td><td class="r">${eur2(num(v.suivi.visitFee))}</td></tr></tbody></table></div>`;
+}
+function suiviView(){
+  const v=S.v, s=v.suivi;
+  const payOpts=cur=>Object.entries(PAY).map(([a,b])=>`<option value="${a}" ${cur===a?'selected':''}>${b}</option>`).join('');
+  return `<div class="card"><h2>Visite</h2>
+      <div class="two" style="margin-top:10px">
+        <label class="f"><span>Tarif visite (€)</span><input class="inp num" inputmode="decimal" data-b="suivi.visitFee" data-t="num" value="${num(s.visitFee)}"></label>
+        <label class="f"><span>Paiement</span><select class="inp" data-b="suivi.visitPay">${payOpts(s.visitPay)}</select></label></div>
+      <label class="f"><span>Taux de commission sur ce dossier (%)</span><input class="inp num" inputmode="decimal" data-b="commissionRate" data-t="num" value="${num(v.commissionRate)}"></label></div>
+    <div class="card"><h2>Artisans recommandés</h2>
+      ${s.artisans.map((a,i)=>`<div class="line"><div class="two">
+          <label class="f"><span>Nom / entreprise</span><input class="inp" data-b="suivi.artisans.${i}.nom" value="${esc(a.nom)}"></label>
+          <label class="f"><span>Métier</span><input class="inp" data-b="suivi.artisans.${i}.metier" value="${esc(a.metier)}" placeholder="Isolation, PAC…"></label></div>
+        <label class="f"><span>Téléphone</span><input class="inp" type="tel" data-b="suivi.artisans.${i}.tel" value="${esc(a.tel)}"></label>
+        <button class="btn danger sm" data-a="delart" data-arg="${i}">${ic('trash')} Retirer</button></div>`).join('')}
+      <button class="btn alt block" data-a="addart">${ic('plus')} Ajouter un artisan</button></div>
+    <div class="card"><h2>Travaux réalisés</h2>
+      ${s.works.map((w,i)=>`<div class="line">
+        <label class="f"><span>Artisan</span><input class="inp" list="artlist" data-b="suivi.works.${i}.artisan" value="${esc(w.artisan)}"></label>
+        <label class="f"><span>Travaux</span><input class="inp" data-b="suivi.works.${i}.desc" value="${esc(w.desc)}" placeholder="Isolation combles 60 m²"></label>
+        <div class="two">
+          <label class="f"><span>Montant HT (€)</span><input class="inp num" inputmode="decimal" data-b="suivi.works.${i}.montant" data-t="num" value="${num(w.montant)||''}"></label>
+          <label class="f"><span>Commission (auto)</span><input class="inp num" readonly tabindex="-1" data-com="${i}" value="${eur2(commissionOf(w,v))}"></label></div>
+        <label class="f"><span>Paiement de la commission</span><select class="inp" data-b="suivi.works.${i}.pay">${payOpts(w.pay)}</select></label>
+        <button class="btn danger sm" data-a="delwork" data-arg="${i}">${ic('trash')} Supprimer</button></div>`).join('')}
+      <datalist id="artlist">${s.artisans.filter(a=>a.nom).map(a=>`<option value="${esc(a.nom)}">`).join('')}</datalist>
+      <button class="btn alt block" data-a="addwork">${ic('plus')} Ajouter des travaux réalisés</button></div>
+    <div id="suivi-sum">${suiviSum(v)}</div>
+    <button class="btn danger block" data-a="delvisit">${ic('trash')} Supprimer ce dossier</button>`;
+}
+
+/* =========================================================
+   Réglages
+   ========================================================= */
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;const b=$('#instbtn');if(b)b.hidden=false});
+function viewSettings(){
+  const s=S.settings, p=s.profile;
+  app.innerHTML=header({title:'Réglages',back:'#/'})+`<main>
+    <div class="card"><h2>Mon profil (rapport PDF)</h2>
+      <label class="f" style="margin-top:10px"><span>Nom</span><input class="inp" data-s="profile.name" value="${esc(p.name)}"></label>
+      <label class="f"><span>Accroche</span><input class="inp" data-s="profile.tagline" value="${esc(p.tagline)}"></label>
+      <div class="two"><label class="f"><span>Téléphone</span><input class="inp" type="tel" data-s="profile.phone" value="${esc(p.phone)}"></label>
+        <label class="f"><span>E-mail</span><input class="inp" type="email" data-s="profile.email" value="${esc(p.email)}"></label></div>
+      <label class="f"><span>SIRET (facultatif)</span><input class="inp" data-s="profile.siret" value="${esc(p.siret)}"></label>
+      <div class="row"><span class="brand-mark" style="width:56px;height:56px;border:1px solid var(--line)">${s.logo?`<img src="${esc(s.logo)}" alt="Logo actuel">`:LOGO_SVG}</span>
+        <button class="btn alt sm" data-a="logo">Choisir mon logo</button>${s.logo?'<button class="btn danger sm" data-a="nologo">Retirer</button>':''}</div></div>
+    <div class="card"><h2>Tarifs</h2>
+      <div class="two" style="margin-top:10px"><label class="f"><span>Visite (€)</span><input class="inp num" inputmode="decimal" data-s="visitFee" data-t="num" value="${num(s.visitFee)}"></label>
+        <label class="f"><span>Commission (%)</span><input class="inp num" inputmode="decimal" data-s="commissionRate" data-t="num" value="${num(s.commissionRate)}"></label></div>
+      <p class="hint">S’applique aux nouveaux dossiers ; modifiable ensuite dossier par dossier.</p></div>
+    <div class="card"><h2>Connexion à Claude (proxy)</h2>
+      <p class="hint">Adresse de votre Cloudflare Worker et jeton d’accès. La clé Anthropic n’est jamais stockée ici.</p>
+      <label class="f"><span>Adresse du Worker</span><input class="inp" type="url" inputmode="url" data-s="workerUrl" value="${esc(s.workerUrl)}" placeholder="https://energie-proxy.xxx.workers.dev"></label>
+      <label class="f"><span>Jeton d’accès (APP_TOKEN)</span><input class="inp" type="password" autocomplete="off" data-s="token" value="${esc(s.token)}"></label>
+      <button class="btn alt block" data-a="ping">Tester la connexion</button></div>
+    <div class="card"><h2>Grille de prix (TTC, pose comprise)</h2>
+      <p class="hint">Valeurs indicatives pré-remplies pour la France : ajustez-les. Claude s’en sert pour chiffrer chaque poste.</p>
+      ${s.grid.map((g,i)=>`<div class="line"><label class="f"><span>Libellé</span><input class="inp" data-g="${i}.label" value="${esc(g.label)}"></label>
+        <div class="two"><label class="f"><span>Min (€ / ${esc(g.unite)})</span><input class="inp num" inputmode="decimal" data-g="${i}.min" data-t="num" value="${num(g.min)}"></label>
+        <label class="f"><span>Max (€ / ${esc(g.unite)})</span><input class="inp num" inputmode="decimal" data-g="${i}.max" data-t="num" value="${num(g.max)}"></label></div>
+        <div class="row sp"><label class="f" style="margin:0"><span>Unité</span><input class="inp" style="width:140px" data-g="${i}.unite" value="${esc(g.unite)}"></label>
+        <button class="btn danger sm" data-a="delgrid" data-arg="${i}" aria-label="Supprimer la ligne ${esc(g.label)}">${ic('trash')}</button></div></div>`).join('')}
+      <div class="row"><button class="btn alt" data-a="addgrid">${ic('plus')} Ajouter une ligne</button><button class="btn alt" data-a="resetgrid">Valeurs par défaut</button></div></div>
+    <div class="card"><h2>Sauvegarde et installation</h2>
+      <p class="hint">Les données ne vivent que sur ce téléphone : exportez une sauvegarde régulièrement.</p>
+      <div class="row"><button class="btn alt" data-a="export">${ic('down')} Exporter</button><button class="btn alt" data-a="import">Importer</button>
+      <button class="btn cta" id="instbtn" data-a="install" ${installEvt?'':'hidden'}>Installer l’appli</button></div>
+      <p class="hint" style="margin-top:10px">iPhone : bouton Partager → « Sur l’écran d’accueil ».</p></div>
+  </main>`;
+}
+
+async function exportAll(){
+  const photos=[];
+  for(const v of S.visits) for(const p of await DB.photosOf(v.id)) photos.push({...p,blob:undefined,data:await new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(p.blob)})});
+  const blob=new Blob([JSON.stringify({app:'visite-energie',version:1,exportedAt:Date.now(),settings:{...S.settings,token:''},visits:S.visits,photos})],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sauvegarde-visite-energie-'+today()+'.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+async function importAll(file){
+  try{
+    const d=JSON.parse(await file.text());
+    if(d.app!=='visite-energie') throw new Error('Fichier non reconnu');
+    for(const v of d.visits||[]){await DB.put('visits',v);const i=S.visits.findIndex(x=>x.id===v.id);if(i>=0)S.visits[i]=v;else S.visits.push(v)}
+    for(const p of d.photos||[]){const {data,...rest}=p;await DB.put('photos',{...rest,blob:await (await fetch(data)).blob()})}
+    if(d.settings){S.settings=mergeSettings({...d.settings,token:S.settings.token,workerUrl:d.settings.workerUrl||S.settings.workerUrl});saveSettings()}
+    toast('Sauvegarde importée'); route();
+  }catch(e){toast('Import impossible : '+e.message)}
+}
+
+/* =========================================================
+   Actions (délégation d'événements)
+   ========================================================= */
+const A = {
+  async new(){const v=newVisit();S.visits.push(v);await DB.put('visits',v);location.hash='#/visit/'+v.id+'/visite'},
+  tab(el){location.hash='#/visit/'+S.v.id+'/'+el.dataset.arg},
+  room(el){stopMic();S.room=el.dataset.arg;renderTab();$('.chip.on')?.scrollIntoView({inline:'center',block:'nearest'})},
+  next(){stopMic();const i=ROOMS.findIndex(r=>r.k===S.room);S.room=ROOMS[(i+1)%ROOMS.length].k;renderTab();window.scrollTo({top:0,behavior:'smooth'});$('.chip.on')?.scrollIntoView({inline:'center',block:'nearest'})},
+  mic(){listening?stopMic():startMic()},
+  photo(){$('#cam').click()}, gallery(){$('#gal').click()},
+  async delphoto(el){
+    if(!confirm('Supprimer cette photo ?')) return;
+    const id=el.dataset.arg; await DB.del('photos',id);
+    S.photos=S.photos.filter(p=>p.id!==id); const u=S.urls.get(id); if(u){URL.revokeObjectURL(u);S.urls.delete(id)}
+    renderTab();
+  },
+  gen:generate, print:printReport,
+  addart(){S.v.suivi.artisans.push({nom:'',metier:'',tel:''});touch();renderTab()},
+  delart(el){S.v.suivi.artisans.splice(+el.dataset.arg,1);touch();renderTab()},
+  addwork(){S.v.suivi.works.push({artisan:'',desc:'',montant:0,pay:'a_facturer'});touch();renderTab()},
+  delwork(el){if(!confirm('Supprimer cette ligne ?'))return;S.v.suivi.works.splice(+el.dataset.arg,1);touch();renderTab()},
+  async delvisit(){
+    if(!confirm('Supprimer définitivement ce dossier, ses notes et ses photos ?')) return;
+    const id=S.v.id; for(const p of await DB.photosOf(id)) await DB.del('photos',p.id);
+    await DB.del('visits',id); S.visits=S.visits.filter(v=>v.id!==id); S.v=null; location.hash='#/';
+  },
+  logo(){$('#logofile').click()},
+  nologo(){S.settings.logo=null;saveSettings();viewSettings()},
+  addgrid(){S.settings.grid.push({id:'perso_'+Date.now().toString(36),label:'Nouvelle ligne',unite:'unité',min:0,max:0});saveSettings();viewSettings()},
+  delgrid(el){if(!confirm('Supprimer cette ligne de la grille ?'))return;S.settings.grid.splice(+el.dataset.arg,1);saveSettings();viewSettings()},
+  resetgrid(){if(!confirm('Remettre la grille de prix par défaut ?'))return;S.settings.grid=JSON.parse(JSON.stringify(DEFAULT_GRID));saveSettings();viewSettings()},
+  async ping(){
+    const s=S.settings; if(!s.workerUrl){toast('Renseignez l’adresse du Worker.');return}
+    try{const r=await fetch(s.workerUrl.replace(/\/+$/,'')+'/health');toast(r.ok?'✓ Proxy joignable':'Proxy répond HTTP '+r.status)}
+    catch{toast('Proxy injoignable (adresse ou réseau).')}
+  },
+  export:exportAll, import(){$('#importfile').click()},
+  async install(){if(!installEvt)return;installEvt.prompt();await installEvt.userChoice;installEvt=null;const b=$('#instbtn');if(b)b.hidden=true}
+};
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]'); if(!el) return;
+  const f=A[el.dataset.a]; if(f) f(el);
+});
+
+function readVal(el){
+  if(el.type==='checkbox') return el.checked;
+  if(el.dataset.t==='num') return num(el.value);
+  if(el.dataset.t==='lines') return el.value.split('\n');
+  return el.value;
+}
+let capT;
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.tagName==='TEXTAREA'&&el.classList.contains('auto')) autosize(el);
+  if(el.dataset.b){
+    if(!S.v) return;
+    setPath(S.v,el.dataset.b,readVal(el)); touch(); afterBind(el.dataset.b);
+  }else if(el.dataset.s){
+    setPath(S.settings,el.dataset.s,readVal(el)); saveSettings();
+  }else if(el.dataset.g){
+    const [i,f]=el.dataset.g.split('.'); S.settings.grid[+i][f]=readVal(el); saveSettings();
+  }else if(el.dataset.pc){
+    const p=S.photos.find(x=>x.id===el.dataset.pc); if(!p) return;
+    p.caption=el.value; clearTimeout(capT); capT=setTimeout(()=>DB.put('photos',p),400);
+  }else if(el.id==='withph'){ S.withPhotos=el.checked }
+});
+function afterBind(path){
+  if(path==='address'||path==='buyer'){const h=$('#htitle');if(h)h.textContent=S.v.address||'Nouvelle visite'}
+  let m=path.match(/^diag\.postes\.(\d+)\./);
+  if(m){
+    const i=+m[1], p=S.v.diag.postes[i];
+    const r=$(`[data-sumrange="${i}"]`); if(r) r.textContent=range(p);
+    const pr=$(`[data-sumprio="${i}"]`); if(pr){pr.textContent=PRIO[p.priorite];pr.className='pill '+p.priorite}
+    const s=$('#diag-sum'); if(s) s.innerHTML=sumHTML(S.v.diag);
+  }
+  if(path.startsWith('suivi.')||path==='commissionRate'){
+    const s=$('#suivi-sum'); if(s) s.innerHTML=suiviSum(S.v);
+    $$('[data-com]').forEach(i=>{i.value=eur2(commissionOf(S.v.suivi.works[+i.dataset.com],S.v))});
+  }
+}
+$('#cam').addEventListener('change',e=>{addPhotos([...e.target.files]);e.target.value=''});
+$('#gal').addEventListener('change',e=>{addPhotos([...e.target.files]);e.target.value=''});
+$('#importfile').addEventListener('change',e=>{if(e.target.files[0])importAll(e.target.files[0]);e.target.value=''});
+$('#logofile').addEventListener('change',async e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  try{
+    const bmp=await createImageBitmap(f), k=Math.min(1,480/Math.max(bmp.width,bmp.height));
+    const c=document.createElement('canvas'); c.width=Math.round(bmp.width*k); c.height=Math.round(bmp.height*k);
+    c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+    S.settings.logo=c.toDataURL('image/png'); saveSettings(); viewSettings(); toast('Logo enregistré');
+  }catch{toast('Logo illisible')}
+});
+window.addEventListener('online',()=>route());
+window.addEventListener('offline',()=>route());
+
+/* =========================================================
+   Démarrage
+   ========================================================= */
+(async function init(){
+  try{
+    await DB.open();
+    S.settings=mergeSettings(await DB.get('kv','settings'));
+    S.visits=await DB.all('visits');
+    navigator.storage?.persist?.();
+  }catch(e){
+    app.innerHTML='<main><div class="err">Stockage local indisponible (navigation privée ?). L’application ne peut pas enregistrer vos visites.</div></main>';
+    return;
+  }
+  window.addEventListener('hashchange',route);
+  route();
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
