@@ -8,6 +8,7 @@
  * GET  /health
  */
 
+const VERSION = '2-sans-tool-choice';
 const MAX_BODY = 24 * 1024 * 1024;
 const MAX_PHOTOS = 24;
 const POSTES = ['fenetres', 'combles', 'murs', 'sols', 'chauffage', 'ventilation', 'eclairage', 'humidite'];
@@ -176,7 +177,7 @@ export default {
     const url = new URL(req.url);
 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    if (req.method === 'GET' && url.pathname === '/health') return json({ ok: true }, 200, cors);
+    if (req.method === 'GET' && url.pathname === '/health') return json({ ok: true, version: VERSION }, 200, cors);
     if (req.method !== 'POST' || url.pathname !== '/diagnostic') return json({ ok: false, error: 'Introuvable' }, 404, cors);
 
     env = { ...env, ANTHROPIC_API_KEY: (env.ANTHROPIC_API_KEY || '').trim(), APP_TOKEN: (env.APP_TOKEN || '').trim() };
@@ -197,7 +198,7 @@ export default {
       const beat = setInterval(() => w.write(enc.encode(' ')).catch(() => {}), 10000);
       let out;
       try { out = { ok: true, diagnostic: await callClaude(body, env) }; }
-      catch (e) { out = { ok: false, error: String(e.message || e).slice(0, 300) }; }
+      catch (e) { out = { ok: false, error: String(e.message || e).slice(0, 300) + ` [proxy v${VERSION}]` }; }
       clearInterval(beat);
       try { await w.write(enc.encode(JSON.stringify(out))); await w.close(); } catch {}
     })());
