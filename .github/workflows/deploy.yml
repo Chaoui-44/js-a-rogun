@@ -4,7 +4,7 @@ name: Déployer
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'worker/**']
+    paths: ['app/**', 'worker/**', 'functions/**']
   workflow_dispatch:
 jobs:
   deploy:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm install
+      - run: npx wrangler pages project create visite-energie --production-branch main || true
+      - run: printf '%s' "${{ secrets.ANTHROPIC_API_KEY }}" | npx wrangler pages secret put ANTHROPIC_API_KEY --project-name visite-energie
+      - run: printf '%s' "${{ secrets.APP_TOKEN }}" | npx wrangler pages secret put APP_TOKEN --project-name visite-energie
       - run: npx wrangler pages deploy app --project-name visite-energie --branch main
-      - run: printf '%s' "${{ secrets.ANTHROPIC_API_KEY }}" | npx wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml
-      - run: printf '%s' "${{ secrets.APP_TOKEN }}" | npx wrangler secret put APP_TOKEN --config worker/wrangler.toml
-      - run: npx wrangler deploy --config worker/wrangler.toml --var "ALLOWED_ORIGIN:https://visite-energie.pages.dev"

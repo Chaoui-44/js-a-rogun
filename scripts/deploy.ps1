@@ -38,29 +38,27 @@ if (-not $token) {
   Write-Host "Jeton d'acces genere."
 }
 
-Write-Host '> Site (Cloudflare Pages)...'
+Write-Host '> Projet Cloudflare Pages...'
 $null = Wr pages project create $Project --production-branch main
-$null = Wr pages deploy app --project-name $Project --branch main
-if ($script:code -ne 0) { Fail 'deploiement du site echoue' }
 $siteUrl = "https://$Project.pages.dev"
 
-Write-Host '> Proxy (Worker)...'
-$key   | & npx.cmd wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml
+Write-Host '> Secrets (cle Anthropic + jeton)...'
+$key   | & npx.cmd wrangler pages secret put ANTHROPIC_API_KEY --project-name $Project
 if ($LASTEXITCODE -ne 0) { Fail 'secret ANTHROPIC_API_KEY non enregistre' }
-$token | & npx.cmd wrangler secret put APP_TOKEN --config worker/wrangler.toml
+$token | & npx.cmd wrangler pages secret put APP_TOKEN --project-name $Project
 if ($LASTEXITCODE -ne 0) { Fail 'secret APP_TOKEN non enregistre' }
-$out = Wr deploy --config worker/wrangler.toml --var "ALLOWED_ORIGIN:$siteUrl"
-if ($script:code -ne 0) { Fail 'deploiement du Worker echoue' }
-$m = [regex]::Match($out, 'https://[A-Za-z0-9.-]+\.workers\.dev')
-if (-not $m.Success) { Fail "adresse du Worker introuvable dans la sortie ci-dessus" }
-$workerUrl = $m.Value
+
+Write-Host '> Publication du site + proxy...'
+$out = Wr pages deploy app --project-name $Project --branch main
+if ($script:code -ne 0) { Fail 'deploiement echoue' }
+$m = [regex]::Match($out, 'https://[A-Za-z0-9.-]+\.pages\.dev')
+if ($m.Success) { $siteUrl = $m.Value }
 
 Write-Host ''
 Write-Host 'TERMINE.' -ForegroundColor Green
-Write-Host "Site  : $siteUrl"
-Write-Host "Proxy : $workerUrl"
+Write-Host "Site : $siteUrl"
 Write-Host ''
 Write-Host "Ouvrez CE LIEN sur votre telephone (l'appli se configure toute seule), puis 'Installer' :"
-Write-Host "$siteUrl/#/setup?w=$workerUrl&t=$token" -ForegroundColor Yellow
+Write-Host "$siteUrl/#/setup?t=$token" -ForegroundColor Yellow
 Write-Host ''
 Write-Host "Gardez ce jeton : $token"

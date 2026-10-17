@@ -15,9 +15,13 @@ npm run deploy
 ```
 Sous Windows (PowerShell) : `npm install` puis `npm run deploy:win`.
 
-Le script se connecte à Cloudflare, publie le site et le proxy, enregistre vos secrets, règle CORS, puis affiche **un lien à ouvrir sur le téléphone** qui configure l'appli tout seul (adresse du proxy + jeton). Il faut seulement votre clé API Anthropic. Les sections 1 à 3 ci-dessous décrivent la même chose à la main.
+Le proxy Claude est **intégré au site** (Cloudflare Pages Functions, dossier `functions/`) : aucun domaine ni sous-domaine `workers.dev` à créer. Le script se connecte à Cloudflare, enregistre vos secrets, publie le tout, puis affiche **un lien à ouvrir sur le téléphone** qui configure l'appli tout seul (adresse du proxy + jeton). Il faut seulement votre clé API Anthropic. Les sections 1 à 3 ci-dessous décrivent la même chose à la main.
 
 Déploiement automatique à chaque push sur `main` : ajoutez les secrets GitHub `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ANTHROPIC_API_KEY`, `APP_TOKEN` (workflow `.github/workflows/deploy.yml`).
+
+## Option avancée : Worker séparé
+
+Le dossier `worker/` permet aussi de déployer le proxy comme Worker indépendant (nécessite un sous-domaine `workers.dev`) ; renseignez alors son adresse dans les Réglages.
 
 ## 1. Déployer le Worker (proxy Claude)
 

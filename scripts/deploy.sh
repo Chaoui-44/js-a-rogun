@@ -13,23 +13,24 @@ $W whoami >/dev/null 2>&1 || $W login
 if [ -z "${ANTHROPIC_API_KEY:-}" ]; then read -r -s -p "Clé API Anthropic (sk-ant-…) : " ANTHROPIC_API_KEY; echo; fi
 if [ -z "${APP_TOKEN:-}" ]; then APP_TOKEN="$(openssl rand -hex 16)"; echo "Jeton d'accès généré."; fi
 
-echo "▶ Site (Cloudflare Pages)…"
+echo "▶ Projet Cloudflare Pages…"
 $W pages project create "$PROJECT" --production-branch main >/dev/null 2>&1 || true
-SITE_OUT="$($W pages deploy app --project-name "$PROJECT" --branch main 2>&1 | tee /dev/stderr)"
 SITE_URL="https://${PROJECT}.pages.dev"
 
-echo "▶ Proxy (Worker)…"
-printf '%s' "$ANTHROPIC_API_KEY" | $W secret put ANTHROPIC_API_KEY --config worker/wrangler.toml
-printf '%s' "$APP_TOKEN"        | $W secret put APP_TOKEN --config worker/wrangler.toml
-WORKER_OUT="$($W deploy --config worker/wrangler.toml --var "ALLOWED_ORIGIN:${SITE_URL}" 2>&1 | tee /dev/stderr)"
-WORKER_URL="$(echo "$WORKER_OUT" | grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' | head -1)"
+echo "▶ Secrets (clé Anthropic + jeton)…"
+printf '%s' "$ANTHROPIC_API_KEY" | $W pages secret put ANTHROPIC_API_KEY --project-name "$PROJECT"
+printf '%s' "$APP_TOKEN"        | $W pages secret put APP_TOKEN --project-name "$PROJECT"
+
+echo "▶ Publication du site + proxy…"
+OUT="$($W pages deploy app --project-name "$PROJECT" --branch main 2>&1 | tee /dev/stderr)"
+FOUND="$(echo "$OUT" | grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' | head -1 || true)"
+[ -n "$FOUND" ] && SITE_URL="$FOUND"
 
 echo
 echo "✅ Terminé."
-echo "Site   : $SITE_URL"
-echo "Proxy  : $WORKER_URL"
+echo "Site : $SITE_URL"
 echo
-echo "Ouvrez CE LIEN sur votre téléphone : l'appli se configure toute seule (puis Installer sur l'écran d'accueil) :"
-echo "${SITE_URL}/#/setup?w=${WORKER_URL}&t=${APP_TOKEN}"
+echo "Ouvrez CE LIEN sur votre téléphone (l'appli se configure toute seule), puis « Installer » :"
+echo "${SITE_URL}/#/setup?t=${APP_TOKEN}"
 echo
 echo "Gardez ce jeton : $APP_TOKEN"
