@@ -13,6 +13,8 @@ worker/   proxy vers l'API Anthropic (la clé n'est jamais dans le navigateur) �
 npm install
 npm run deploy
 ```
+Sous Windows (PowerShell) : `npm install` puis `npm run deploy:win`.
+
 Le script se connecte à Cloudflare, publie le site et le proxy, enregistre vos secrets, règle CORS, puis affiche **un lien à ouvrir sur le téléphone** qui configure l'appli tout seul (adresse du proxy + jeton). Il faut seulement votre clé API Anthropic. Les sections 1 à 3 ci-dessous décrivent la même chose à la main.
 
 Déploiement automatique à chaque push sur `main` : ajoutez les secrets GitHub `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ANTHROPIC_API_KEY`, `APP_TOKEN` (workflow `.github/workflows/deploy.yml`).

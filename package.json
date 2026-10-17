@@ -4,6 +4,7 @@
   "description": "PWA coordinateur énergie + proxy Cloudflare Worker",
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
+    "deploy:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "deploy:worker": "wrangler deploy --config worker/wrangler.toml",
     "deploy:site": "wrangler pages deploy app --project-name visite-energie",
     "dev:worker": "wrangler dev --config worker/wrangler.toml",

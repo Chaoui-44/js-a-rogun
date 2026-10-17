@@ -180,6 +180,7 @@ export default {
     if (req.method === 'GET' && url.pathname === '/health') return json({ ok: true }, 200, cors);
     if (req.method !== 'POST' || url.pathname !== '/diagnostic') return json({ ok: false, error: 'Introuvable' }, 404, cors);
 
+    env = { ...env, ANTHROPIC_API_KEY: (env.ANTHROPIC_API_KEY || '').trim(), APP_TOKEN: (env.APP_TOKEN || '').trim() };
     if (!env.ANTHROPIC_API_KEY || !env.APP_TOKEN) return json({ ok: false, error: 'Worker non configuré (secrets manquants).' }, 500, cors);
     if (!(await tokenOk(req.headers.get('X-App-Token'), env.APP_TOKEN))) return json({ ok: false, error: 'Jeton refusé.' }, 401, cors);
     if (Number(req.headers.get('content-length') || 0) > MAX_BODY) return json({ ok: false, error: 'Requête trop volumineuse.' }, 413, cors);
