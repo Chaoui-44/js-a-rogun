@@ -23,8 +23,6 @@ printf '%s' "$APP_TOKEN"        | $W pages secret put APP_TOKEN --project-name "
 
 echo "▶ Publication du site + proxy…"
 OUT="$($W pages deploy app --project-name "$PROJECT" --branch main 2>&1 | tee /dev/stderr)"
-FOUND="$(echo "$OUT" | grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' | head -1 || true)"
-[ -n "$FOUND" ] && SITE_URL="$FOUND"
 
 echo
 echo "✅ Terminé."

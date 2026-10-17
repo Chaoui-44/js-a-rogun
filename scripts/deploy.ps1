@@ -51,8 +51,6 @@ if ($LASTEXITCODE -ne 0) { Fail 'secret APP_TOKEN non enregistre' }
 Write-Host '> Publication du site + proxy...'
 $out = Wr pages deploy app --project-name $Project --branch main
 if ($script:code -ne 0) { Fail 'deploiement echoue' }
-$m = [regex]::Match($out, 'https://[A-Za-z0-9.-]+\.pages\.dev')
-if ($m.Success) { $siteUrl = $m.Value }
 
 Write-Host ''
 Write-Host 'TERMINE.' -ForegroundColor Green
