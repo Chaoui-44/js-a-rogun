@@ -1,0 +1,13 @@
+{
+  "name": "visite-energie",
+  "private": true,
+  "description": "PWA coordinateur énergie + proxy Cloudflare Worker",
+  "scripts": {
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:worker": "wrangler deploy --config worker/wrangler.toml",
+    "deploy:site": "wrangler pages deploy app --project-name visite-energie",
+    "dev:worker": "wrangler dev --config worker/wrangler.toml",
+    "dev:site": "npx serve app"
+  },
+  "devDependencies": { "wrangler": "^4" }
+}

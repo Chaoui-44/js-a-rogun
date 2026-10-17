@@ -7,6 +7,16 @@ app/      site statique (index.html, manifest, service worker, icônes)  → Clo
 worker/   proxy vers l'API Anthropic (la clé n'est jamais dans le navigateur) → Cloudflare Workers
 ```
 
+## Déploiement express (recommandé)
+
+```bash
+npm install
+npm run deploy
+```
+Le script se connecte à Cloudflare, publie le site et le proxy, enregistre vos secrets, règle CORS, puis affiche **un lien à ouvrir sur le téléphone** qui configure l'appli tout seul (adresse du proxy + jeton). Il faut seulement votre clé API Anthropic. Les sections 1 à 3 ci-dessous décrivent la même chose à la main.
+
+Déploiement automatique à chaque push sur `main` : ajoutez les secrets GitHub `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ANTHROPIC_API_KEY`, `APP_TOKEN` (workflow `.github/workflows/deploy.yml`).
+
 ## 1. Déployer le Worker (proxy Claude)
 
 Prérequis : un compte Cloudflare, Node 18+, une clé API Anthropic.

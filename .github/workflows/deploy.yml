@@ -1,0 +1,23 @@
+# Déploiement automatique à chaque push sur main (ou à la main depuis l'onglet Actions).
+# Secrets GitHub requis : CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, ANTHROPIC_API_KEY, APP_TOKEN
+name: Déployer
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'worker/**']
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install
+      - run: npx wrangler pages deploy app --project-name visite-energie --branch main
+      - run: printf '%s' "${{ secrets.ANTHROPIC_API_KEY }}" | npx wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml
+      - run: printf '%s' "${{ secrets.APP_TOKEN }}" | npx wrangler secret put APP_TOKEN --config worker/wrangler.toml
+      - run: npx wrangler deploy --config worker/wrangler.toml --var "ALLOWED_ORIGIN:https://visite-energie.pages.dev"

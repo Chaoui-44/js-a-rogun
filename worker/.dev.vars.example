@@ -1,0 +1,3 @@
+# Copiez ce fichier en .dev.vars pour `npm run dev:worker` (jamais commité)
+ANTHROPIC_API_KEY=sk-ant-...
+APP_TOKEN=un-mot-de-passe-long
