@@ -16,7 +16,11 @@ function Wr {
 
 Write-Host '> Connexion Cloudflare...'
 $null = & npx.cmd wrangler whoami 2>&1
-if ($LASTEXITCODE -ne 0) { & npx.cmd wrangler login; if ($LASTEXITCODE -ne 0) { Fail 'connexion Cloudflare impossible' } }
+if ($LASTEXITCODE -ne 0 -and -not $env:CLOUDFLARE_API_TOKEN) {
+  & npx.cmd wrangler login
+  $null = & npx.cmd wrangler whoami 2>&1
+  if ($LASTEXITCODE -ne 0) { Fail "connexion Cloudflare impossible. Lancez d'abord 'npx wrangler login' a la main, ou definissez CLOUDFLARE_API_TOKEN." }
+}
 
 $key = $env:ANTHROPIC_API_KEY
 if (-not $key) {
